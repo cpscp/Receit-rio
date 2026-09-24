@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Receitário</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Faculty+Glyphic&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23000'/%3E%3Cg stroke='%23A9DFBF' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M30 65c12-6 27-6 39 0v64c-12-6-27-6-39 0Z'/%3E%3Cpath d='M108 65c-12-6-27-6-39 0v64c12-6 27-6 39 0Z'/%3E%3C/g%3E%3Ctext x='155' y='104' font-family='Georgia,serif' font-weight='700' font-size='82' fill='%23fff' text-anchor='middle' dominant-baseline='middle'%3ER%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23000'/%3E%3Cg stroke='%23A9DFBF' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M30 65c12-6 27-6 39 0v64c-12-6-27-6-39 0Z'/%3E%3Cpath d='M108 65c-12-6-27-6-39 0v64c12-6 27-6 39 0Z'/%3E%3C/g%3E%3Ctext x='155' y='104' font-family='Georgia,serif' font-weight='700' font-size='82' fill='%23fff' text-anchor='middle' dominant-baseline='middle'%3ER%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#000; --card:#1c1c1e; --line:#2c2c2e; --text:#f2f2f3; --sub:#8e8e93;
+  --accent:#A9DFBF; --accent-ink:#1e3b2b; --radius:14px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{height:100%;margin:0;}
+body{
+  background:var(--bg); color:var(--text); font-family:'Faculty Glyphic',serif;
+  -webkit-font-smoothing:antialiased; display:flex; flex-direction:column; min-height:100%; overflow-x:hidden;
+}
+header{
+  padding:14px 20px 12px; padding-top:calc(14px + env(safe-area-inset-top,0px));
+  position:sticky; top:0; z-index:5; background:rgba(0,0,0,.82); backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+header h1{margin:0; font-size:1.5rem; font-weight:700; letter-spacing:-.02em;}
+main{flex:1; padding:16px 16px 96px; max-width:640px; width:100%; margin:0 auto;}
+nav{
+  position:fixed; bottom:0; left:0; right:0; display:flex; z-index:10;
+  background:rgba(20,20,22,.86); backdrop-filter:blur(16px); border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+nav button{
+  flex:1; background:none; border:none; color:var(--sub); font-family:inherit; font-size:.72rem;
+  padding:10px 4px 9px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px;
+}
+nav button svg{width:23px; height:23px; stroke:var(--sub); fill:none;}
+nav button.active{color:var(--accent);}
+nav button.active svg{stroke:var(--accent);}
+h2{font-size:1.15rem; font-weight:700; margin:4px 0 12px; letter-spacing:-.01em;}
+.group{background:var(--card); border-radius:var(--radius); overflow:hidden; margin-bottom:16px; border:1px solid var(--line);}
+.row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 16px; border-bottom:1px solid var(--line); cursor:pointer;}
+.group .row:last-child{border-bottom:none;}
+.row:active{background:#28282a;}
+.row .meta{color:var(--sub); font-size:.78rem; margin-top:2px;}
+.chev{color:var(--sub); flex:0 0 auto;}
+.chev svg{width:16px;height:16px;stroke:var(--sub);fill:none;}
+.icon-lead{width:22px;height:22px;stroke:var(--sub);fill:none;flex:0 0 auto;}
+.btn{
+  background:var(--accent); color:var(--accent-ink); border:none; border-radius:980px;
+  padding:12px 20px; font-family:inherit; font-weight:600; font-size:.9rem; cursor:pointer;
+}
+.btn.secondary{background:#28282a; color:var(--text); border:1px solid var(--line);}
+.btn.small{padding:8px 14px; font-size:.8rem;}
+.btn.danger{background:transparent; color:#ff6b6b; border:1px solid #3a2424;}
+.rowflex{display:flex; gap:8px; flex-wrap:wrap;}
+.fab{
+  position:fixed; right:18px; bottom:calc(82px + env(safe-area-inset-bottom,0px));
+  width:54px; height:54px; border-radius:50%; background:var(--accent); border:none; cursor:pointer;
+  box-shadow:0 8px 20px rgba(169,223,191,.35); display:flex; align-items:center; justify-content:center; z-index:9;
+}
+.fab svg{width:24px;height:24px; stroke:var(--accent-ink); fill:none;}
+input,textarea,select{
+  width:100%; background:var(--card); border:1px solid var(--line); color:var(--text);
+  border-radius:10px; padding:11px 12px; font-family:inherit; font-size:.9rem; margin-bottom:10px;
+}
+textarea{resize:vertical; min-height:88px;}
+label{font-size:.76rem; color:var(--sub); display:block; margin-bottom:5px;}
+.field{margin-bottom:14px;}
+.ing-line{display:flex; gap:6px; margin-bottom:6px; align-items:center;}
+.ing-line input{margin-bottom:0;}
+.ing-line .qty{width:64px; flex:0 0 auto;}
+.ing-line .unit{width:104px; flex:0 0 auto;}
+.step-line{display:flex; gap:6px; margin-bottom:6px; align-items:flex-start;}
+.step-line span{color:var(--accent); font-weight:700; padding-top:10px; width:20px; flex:0 0 auto; text-align:right; font-size:.85rem;}
+.step-line textarea{min-height:44px;}
+.back{color:var(--text); background:none; border:none; font-family:inherit; font-size:.9rem; cursor:pointer; padding:0 0 14px; display:flex; align-items:center; gap:2px;}
+.back svg{width:19px;height:19px;stroke:var(--accent);fill:none;}
+.empty{color:var(--sub); font-size:.86rem; text-align:center; padding:36px 10px;}
+.recipe-view h3{font-size:1.35rem; margin:0 0 3px; letter-spacing:-.01em;}
+.recipe-view .sub{color:var(--sub); font-size:.82rem; margin-bottom:16px;}
+.recipe-view ul{padding-left:0; list-style:none; margin:0 0 20px;}
+.recipe-view ul li{padding:10px 0; border-bottom:1px solid var(--line); display:flex; gap:8px; font-size:.9rem;}
+.recipe-view ul li b{color:var(--accent); min-width:78px; flex:0 0 auto; font-weight:600;}
+.recipe-view ol{padding-left:0; margin:0; list-style:none;}
+.recipe-view ol li{margin-bottom:12px; padding-left:34px; position:relative; font-size:.9rem; line-height:1.45; counter-increment:step;}
+.recipe-view ol{counter-reset:step;}
+.recipe-view ol li::before{content:counter(step); position:absolute; left:0; top:0; width:24px; height:24px; border-radius:50%; background:#28282a; border:1px solid var(--accent); color:var(--accent); font-size:.74rem; font-weight:700; display:flex; align-items:center; justify-content:center;}
+.section-title{font-size:.78rem; color:var(--sub); margin:18px 0 6px; font-weight:600;}
+.calc-grid{display:grid; grid-template-columns:1fr auto 1fr; gap:10px; align-items:end;}
+.calc-result{margin-top:14px; padding:16px; background:#141416; border:1px solid var(--line); border-radius:12px; font-size:1.05rem; text-align:center;}
+.calc-result b{color:var(--accent);}
+.parse-hint{color:var(--sub); font-size:.76rem; margin:-4px 0 12px;}
+.scale-row{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+.scale-row input{width:68px; margin-bottom:0; text-align:center;}
+.seg{display:flex; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:3px; margin-bottom:14px;}
+.seg button{flex:1; background:none; border:none; color:var(--sub); font-family:inherit; font-size:.82rem; padding:8px 4px; border-radius:8px; cursor:pointer; font-weight:600;}
+.seg button.on{background:#2c2c2e; color:var(--text);}
+::placeholder{color:#54545a;}
+</style>
+</head>
+<body>
+<header>
+  <h1 style="display:flex; align-items:center; gap:10px;">
+    <svg viewBox="0 0 24 24" width="26" height="26" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none" style="flex:0 0 auto; color:var(--accent);">
+      <path d="M3 5c2.5-1.3 5.5-1.3 8 0v13c-2.5-1.3-5.5-1.3-8 0Z"/>
+      <path d="M21 5c-2.5-1.3-5.5-1.3-8 0v13c2.5-1.3 5.5-1.3 8 0Z"/>
+    </svg>
+    Receitário
+  </h1>
+</header>
+<main id="main"></main>
+<button class="fab" id="fab" title="Adicionar">
+  <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+<nav>
+  <button class="active" data-view="home">
+    <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2.5Z"/><path d="M19 3v16"/></svg>
+    Receitas
+  </button>
+  <button data-view="folders">
+    <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
+    Pastas
+  </button>
+  <button data-view="calc">
+    <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12.5" x2="10" y2="12.5"/><line x1="14" y1="12.5" x2="16" y2="12.5"/><line x1="8" y1="16.5" x2="10" y2="16.5"/><line x1="14" y1="16.5" x2="16" y2="16.5"/></svg>
+    Calculadora
+  </button>
+</nav>
+
+<script>
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./service-worker.js').catch(()=>{}); }
+const store = {
+  get(){try{return JSON.parse(localStorage.getItem('receitario_db'))||{folders:[],recipes:[]};}catch(e){return {folders:[],recipes:[]};}},
+  set(d){try{localStorage.setItem('receitario_db',JSON.stringify(d));}catch(e){}}
+};
+let db = store.get();
+let state = {view:'home', folderId:null, editingId:null};
+const uid = ()=>Math.random().toString(36).slice(2,10);
+
+const ICONS = {
+  chevron:'<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>',
+  back:'<svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>',
+  pencil:'<svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+  folder:'<svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>',
+  book:'<svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2.5Z"/><path d="M19 3v16"/></svg>'
+};
+
+// unit tables: base ml for volume, base g for weight
+const UNITS = {
+  volume:{ml:1, l:1000, 'c. de chá':5, 'c. de sopa':15, copo:250, chávena:200, 'chávena de café':50, caneca:300},
+  peso:{g:1, kg:1000, oz:28.35, lb:453.6}
+};
+// approx density g/ml, used to bridge peso <-> volume (caneca, chávena, etc.)
+const DENSITY = {
+  'água / leite':1, 'farinha':0.53, 'açúcar':0.85, 'açúcar em pó':0.56, 'manteiga':0.96,
+  'arroz':0.85, 'óleo':0.92, 'mel':1.42, 'iogurte':1.03
+};
+
+function currentSection(){
+  if(state.view==='folder') return 'folders';
+  if(state.view==='recipe' || state.view==='edit') return state.returnView==='folder' ? 'folders' : (state.returnView||'home');
+  return state.view;
+}
+function render(){
+  const section = currentSection();
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active', b.dataset.view===section));
+  document.getElementById('fab').style.display = (state.view==='home'||state.view==='folders'||state.view==='folder') ? 'flex':'none';
+  const m = document.getElementById('main');
+  if(state.view==='home') m.innerHTML = viewHome();
+  else if(state.view==='folders') m.innerHTML = viewFolders();
+  else if(state.view==='folder') m.innerHTML = viewFolder();
+  else if(state.view==='recipe') m.innerHTML = viewRecipe();
+  else if(state.view==='edit') m.innerHTML = viewEdit();
+  else if(state.view==='calc') m.innerHTML = viewCalc();
+  attach();
+}
+
+function viewHome(){
+  if(db.recipes.length===0) return `<div class="empty">Ainda não tens receitas.<br>Toca no + para adicionar a primeira.</div>`;
+  return `<div class="group">${db.recipes.map(r=>{
+    const f = db.folders.find(x=>x.id===r.folderId);
+    return `<div class="row" data-open-recipe="${r.id}">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="icon-lead">${ICONS.book}</span>
+        <div>
+          <div>${esc(r.title)}</div>
+          <div class="meta">${f?esc(f.name):'Sem pasta'} · ${r.ingredients.length} ingrediente${r.ingredients.length===1?'':'s'}</div>
+        </div>
+      </div>
+      <span class="chev">${ICONS.chevron}</span>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function viewFolders(){
+  if(db.folders.length===0) return `<div class="empty">Ainda não tens pastas.<br>Toca no + para criar a primeira.</div>`;
+  return `<div class="group">${db.folders.map(f=>{
+    const n = db.recipes.filter(r=>r.folderId===f.id).length;
+    return `<div class="row" data-open-folder="${f.id}">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="icon-lead">${ICONS.folder}</span>
+        <div><div>${esc(f.name)}</div><div class="meta">${n} receita${n===1?'':'s'}</div></div>
+      </div>
+      <span class="chev">${ICONS.chevron}</span>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function viewFolder(){
+  const f = db.folders.find(x=>x.id===state.folderId);
+  const list = db.recipes.filter(r=>r.folderId===state.folderId);
+  return `<button class="back" data-go="folders">${ICONS.back} Pastas</button>
+  <h2>${esc(f?f.name:'')}</h2>
+  ${list.length===0?'<div class="empty">Sem receitas nesta pasta ainda.</div>':
+    `<div class="group">${list.map(r=>`<div class="row" data-open-recipe="${r.id}">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="icon-lead">${ICONS.book}</span>
+        <div><div>${esc(r.title)}</div><div class="meta">${r.ingredients.length} ingrediente${r.ingredients.length===1?'':'s'} · ${r.steps.length} passo${r.steps.length===1?'':'s'}</div></div>
+      </div>
+      <span class="chev">${ICONS.chevron}</span>
+    </div>`).join('')}</div>`}
+  <div class="rowflex" style="margin-top:6px">
+    <button class="btn danger small" data-del-folder="${f?f.id:''}">Apagar pasta</button>
+  </div>`;
+}
+
+function viewRecipe(){
+  const r = db.recipes.find(x=>x.id===state.editingId);
+  if(!r) return '<div class="empty">Receita não encontrada.</div>';
+  const backTarget = state.returnView || 'home';
+  return `<button class="back" data-go="${backTarget}" data-fid="${r.folderId||''}">${ICONS.back} ${backTarget==='folder'?'Voltar':'Receitas'}</button>
+  <div class="recipe-view">
+    <h3>${esc(r.title)}</h3>
+    <div class="sub">${r.servings?`Para ${esc(r.servings)}`:''}</div>
+    <div class="scale-row">
+      <label style="margin:0">Escalar receita ×</label>
+      <input type="number" id="scaleFactor" value="1" step="0.25" min="0.25">
+      <button class="btn small secondary" id="applyScale">Aplicar</button>
+    </div>
+    <div class="section-title">INGREDIENTES</div>
+    <ul id="ingList">${r.ingredients.map(i=>`<li><b>${i.qty?fmtNum(i.qty):''} ${esc(i.unit||'')}</b><span>${esc(i.name)}</span></li>`).join('')||'<li>Sem ingredientes registados.</li>'}</ul>
+    <div class="section-title">MODO DE PREPARAÇÃO</div>
+    <ol>${r.steps.map(s=>`<li>${esc(s)}</li>`).join('')||'<li>Sem passos registados.</li>'}</ol>
+    <div class="rowflex" style="margin-top:16px">
+      <button class="btn secondary small" data-edit-recipe="${r.id}">${ICONS.pencil} Editar</button>
+      <button class="btn danger small" data-del-recipe="${r.id}">${ICONS.trash} Apagar</button>
+    </div>
+  </div>`;
+}
+
+function viewEdit(){
+  const r = state.editingId ? db.recipes.find(x=>x.id===state.editingId) : {title:'',ingredients:[],steps:[],servings:'',folderId:state.folderId};
+  const cancelTarget = state.editingId ? 'recipe' : (state.returnView || 'home');
+  return `<button class="back" data-go="${cancelTarget}" data-fid="${r.folderId||''}" data-rid="${r.id||''}">${ICONS.back} Cancelar</button>
+  <h2>${state.editingId?'Editar receita':'Nova receita'}</h2>
+  <div class="field"><label>Título</label><input id="f_title" value="${esc(r.title||'')}" placeholder="Ex: Bolo de iogurte"></div>
+  <div class="field"><label>Pasta</label>
+    <select id="f_folder">
+      <option value="">Sem pasta</option>
+      ${db.folders.map(f=>`<option value="${f.id}" ${r.folderId===f.id?'selected':''}>${esc(f.name)}</option>`).join('')}
+    </select>
+  </div>
+  <div class="field"><label>Doses (opcional)</label><input id="f_servings" value="${esc(r.servings||'')}" placeholder="Ex: 4 pessoas"></div>
+
+  <div class="field">
+    <label>Colar receita para separar automaticamente</label>
+    <textarea id="f_paste" placeholder="Cola aqui o texto de uma receita que encontraste e a app tenta separar ingredientes e modo de preparação."></textarea>
+    <div class="parse-hint">Deteta linhas do tipo "200 g de farinha" como ingrediente; o resto passa a passos.</div>
+    <button class="btn secondary small" id="doParse">Separar automaticamente</button>
+  </div>
+
+  <div class="section-title">INGREDIENTES</div>
+  <div id="ingEdit"></div>
+  <button class="btn secondary small" id="addIng">+ ingrediente</button>
+
+  <div class="section-title">MODO DE PREPARAÇÃO</div>
+  <div id="stepEdit"></div>
+  <button class="btn secondary small" id="addStep">+ passo</button>
+
+  <div class="rowflex" style="margin-top:20px">
+    <button class="btn" id="saveRecipe">Guardar receita</button>
+  </div>`;
+}
+
+function kindOf(unit){ return UNITS.volume[unit]!==undefined ? 'volume' : 'peso'; }
+function allUnits(){ return [...Object.keys(UNITS.volume), ...Object.keys(UNITS.peso)]; }
+
+function viewCalc(){
+  return `<h2>Calculadora de medidas</h2>
+  <div class="group" style="padding:16px">
+    <label>Quantidade</label>
+    <div class="calc-grid">
+      <input id="calcAmount" type="number" value="1" step="any">
+      <div style="color:var(--sub); padding-bottom:11px">de</div>
+      <select id="calcFrom">${allUnits().map(u=>`<option value="${u}">${u}</option>`).join('')}</select>
+    </div>
+    <div class="field" style="margin-top:12px"><label>Converter para</label>
+      <select id="calcTo">${allUnits().map(u=>`<option value="${u}">${u}</option>`).join('')}</select>
+    </div>
+    <div class="field" id="densityWrap" style="display:none">
+      <label>Ingrediente (para converter peso ↔ volume)</label>
+      <select id="calcDensity">${Object.keys(DENSITY).map(d=>`<option value="${d}">${d}</option>`).join('')}</select>
+    </div>
+    <div class="calc-result" id="calcResult">—</div>
+  </div>
+  <div class="parse-hint">Chávena, chávena de café e caneca são medidas caseiras aproximadas (200 ml / 50 ml / 300 ml). Converter peso para caneca/chávena usa a densidade aproximada do ingrediente escolhido — serve para o dia a dia, não é uma medição de precisão.</div>`;
+}
+
+function esc(s){return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmtNum(n){ n=Number(n); return Number.isInteger(n)?n:Math.round(n*100)/100; }
+
+function renderIngEdit(list){
+  document.getElementById('ingEdit').innerHTML = list.map((ing,idx)=>`
+    <div class="ing-line" data-idx="${idx}">
+      <input class="qty" data-f="qty" type="text" value="${esc(ing.qty??'')}" placeholder="qtd">
+      <input class="unit" data-f="unit" type="text" value="${esc(ing.unit||'')}" placeholder="unidade">
+      <input data-f="name" type="text" value="${esc(ing.name||'')}" placeholder="ingrediente">
+      <button class="btn danger small" data-rm-ing="${idx}">×</button>
+    </div>`).join('');
+}
+function renderStepEdit(list){
+  document.getElementById('stepEdit').innerHTML = list.map((s,idx)=>`
+    <div class="step-line" data-idx="${idx}">
+      <span>${idx+1}</span>
+      <textarea data-f="step">${esc(s)}</textarea>
+      <button class="btn danger small" data-rm-step="${idx}">×</button>
+    </div>`).join('');
+}
+
+let editIngredients = [];
+let editSteps = [];
+
+function parseRecipeText(text){
+  const lines = text.split('\n').map(l=>l.trim()).filter(l=>l.length);
+  const ingredients = []; const steps = [];
+  const qtyRe = /^([\d]+[\d,\.\/]*)\s*(g|kg|ml|l|colheres?\s+de\s+(?:sopa|chá)|c\.\s*(?:de\s+)?(?:sopa|chá)|chávenas?(?:\s+de\s+café)?|canecas?|copos?|unidades?|dentes?|fatias?|oz|lb)?\s*(?:de\s+)?(.*)$/i;
+  const methodKeywords = /^(preparo|modo de preparo|modo de preparação|preparação|instruç|passos?)[\s:]*$/i;
+  let seenMethodHeader = false;
+  for(const line of lines){
+    if(methodKeywords.test(line)){ seenMethodHeader = true; continue; }
+    const m = line.match(qtyRe);
+    if(!seenMethodHeader && m && m[3] && m[3].length>0){
+      ingredients.push({qty:m[1].replace(',', '.'), unit:(m[2]||'').trim(), name:m[3].trim()});
+    } else {
+      const clean = line.replace(/^\d+[\.\)]\s*/, '');
+      if(clean) steps.push(clean);
+    }
+  }
+  return {ingredients, steps};
+}
+
+function attach(){
+  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{state.view=b.dataset.view; state.folderId=null; state.editingId=null; render();});
+  document.getElementById('fab').onclick=()=>{ createFolderOrRecipe(); };
+
+  main_qs('[data-open-folder]', el=>el.onclick=()=>{state.view='folder'; state.folderId=el.dataset.openFolder; render();});
+  main_qs('[data-open-recipe]', el=>el.onclick=()=>{
+    state.returnView = (state.view==='folder') ? 'folder' : 'home';
+    state.view='recipe'; state.editingId=el.dataset.openRecipe; render();
+  });
+  main_qs('[data-go]', el=>el.onclick=()=>{
+    state.view=el.dataset.go;
+    if(el.dataset.fid) state.folderId=el.dataset.fid;
+    if(el.dataset.rid) state.editingId=el.dataset.rid; else if(el.dataset.go==='folder') state.editingId=null;
+    render();
+  });
+  main_qs('[data-del-folder]', el=>el.onclick=()=>{
+    if(!el.dataset.delFolder) return;
+    if(confirm('Apagar esta pasta e todas as receitas dentro dela?')){
+      db.recipes = db.recipes.filter(r=>r.folderId!==el.dataset.delFolder);
+      db.folders = db.folders.filter(f=>f.id!==el.dataset.delFolder);
+      store.set(db); state.view='folders'; render();
+    }
+  });
+  main_qs('[data-del-recipe]', el=>el.onclick=()=>{
+    if(confirm('Apagar esta receita?')){
+      db.recipes = db.recipes.filter(x=>x.id!==el.dataset.delRecipe);
+      store.set(db); state.view = state.returnView || 'home'; render();
+    }
+  });
+  main_qs('[data-edit-recipe]', el=>el.onclick=()=>{
+    const r = db.recipes.find(x=>x.id===el.dataset.editRecipe);
+    editIngredients = JSON.parse(JSON.stringify(r.ingredients));
+    editSteps = [...r.steps];
+    state.editingId = r.id; state.folderId=r.folderId; state.view='edit'; render();
+  });
+
+  if(state.view==='edit'){
+    renderIngEdit(editIngredients); renderStepEdit(editSteps);
+    document.getElementById('addIng').onclick=()=>{editIngredients.push({qty:'',unit:'',name:''}); renderIngEdit(editIngredients); bindIngInputs();};
+    document.getElementById('addStep').onclick=()=>{editSteps.push(''); renderStepEdit(editSteps); bindStepInputs();};
+    document.getElementById('doParse').onclick=()=>{
+      const txt = document.getElementById('f_paste').value;
+      const res = parseRecipeText(txt);
+      if(res.ingredients.length) editIngredients = res.ingredients;
+      if(res.steps.length) editSteps = res.steps;
+      renderIngEdit(editIngredients); renderStepEdit(editSteps); bindIngInputs(); bindStepInputs();
+    };
+    document.getElementById('saveRecipe').onclick=()=>{
+      const title = document.getElementById('f_title').value.trim();
+      if(!title){ alert('Dá um título à receita.'); return; }
+      const servings = document.getElementById('f_servings').value.trim();
+      const folderId = document.getElementById('f_folder').value || null;
+      if(state.editingId){
+        const rec = db.recipes.find(x=>x.id===state.editingId);
+        rec.title=title; rec.servings=servings; rec.folderId=folderId; rec.ingredients=editIngredients; rec.steps=editSteps.filter(s=>s.trim());
+      } else {
+        db.recipes.push({id:uid(), folderId, title, servings, ingredients:editIngredients, steps:editSteps.filter(s=>s.trim())});
+      }
+      store.set(db);
+      state.view = state.returnView || 'home'; state.editingId=null; render();
+    };
+    bindIngInputs(); bindStepInputs();
+  }
+
+  if(state.view==='recipe'){
+    const btn = document.getElementById('applyScale');
+    if(btn) btn.onclick=()=>{
+      const factor = parseFloat(document.getElementById('scaleFactor').value)||1;
+      const r = db.recipes.find(x=>x.id===state.editingId);
+      document.getElementById('ingList').innerHTML = r.ingredients.map(i=>{
+        const q = parseFloat((i.qty||'').toString().replace(',','.'));
+        const scaled = isNaN(q) ? i.qty : fmtNum(q*factor);
+        return `<li><b>${scaled||''} ${esc(i.unit||'')}</b><span>${esc(i.name)}</span></li>`;
+      }).join('');
+    };
+  }
+
+  if(state.view==='calc'){
+    const fromSel = document.getElementById('calcFrom');
+    const toSel = document.getElementById('calcTo');
+    const amountEl = document.getElementById('calcAmount');
+    const densityWrap = document.getElementById('densityWrap');
+    const densitySel = document.getElementById('calcDensity');
+    toSel.selectedIndex = 1;
+    function calc(){
+      const fromKind = kindOf(fromSel.value), toKind = kindOf(toSel.value);
+      densityWrap.style.display = (fromKind!==toKind) ? 'block':'none';
+      const amount = parseFloat(amountEl.value)||0;
+      const baseAmount = amount * UNITS[fromKind][fromSel.value];
+      let result;
+      if(fromKind===toKind){
+        result = baseAmount / UNITS[toKind][toSel.value];
+      } else {
+        const density = DENSITY[densitySel.value];
+        const ml = fromKind==='peso' ? baseAmount/density : baseAmount;
+        const g = fromKind==='volume' ? baseAmount*density : baseAmount;
+        const bridged = toKind==='volume' ? ml : g;
+        result = bridged / UNITS[toKind][toSel.value];
+      }
+      document.getElementById('calcResult').innerHTML = `${amount} ${fromSel.value} = <b>${fmtNum(result)}</b> ${toSel.value}`;
+    }
+    [fromSel,toSel,amountEl,densitySel].forEach(el=>el.oninput=calc);
+    calc();
+  }
+}
+
+function bindIngInputs(){
+  document.querySelectorAll('#ingEdit .ing-line').forEach(line=>{
+    const idx = +line.dataset.idx;
+    line.querySelectorAll('input[data-f]').forEach(inp=>{ inp.oninput=()=>{editIngredients[idx][inp.dataset.f]=inp.value;}; });
+  });
+  document.querySelectorAll('[data-rm-ing]').forEach(b=>b.onclick=()=>{editIngredients.splice(+b.dataset.rmIng,1); renderIngEdit(editIngredients); bindIngInputs();});
+}
+function bindStepInputs(){
+  document.querySelectorAll('#stepEdit .step-line').forEach(line=>{
+    const idx = +line.dataset.idx;
+    const t = line.querySelector('textarea');
+    t.oninput=()=>{editSteps[idx]=t.value;};
+  });
+  document.querySelectorAll('[data-rm-step]').forEach(b=>b.onclick=()=>{editSteps.splice(+b.dataset.rmStep,1); renderStepEdit(editSteps); bindStepInputs();});
+}
+
+function main_qs(sel, fn){ document.querySelectorAll('#main '+sel).forEach(fn); }
+
+function createFolderOrRecipe(){
+  if(state.view==='folders'){
+    const name = prompt('Nome da pasta:');
+    if(name && name.trim()){ db.folders.push({id:uid(), name:name.trim()}); store.set(db); render(); }
+  } else if(state.view==='home'){
+    editIngredients=[]; editSteps=[]; state.editingId=null; state.folderId=null; state.returnView='home'; state.view='edit'; render();
+  } else if(state.view==='folder'){
+    editIngredients=[]; editSteps=[]; state.editingId=null; state.returnView='folder'; state.view='edit'; render();
+  }
+}
+
+render();
+</script>
+</body>
+</html>
